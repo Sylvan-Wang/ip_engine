@@ -31,7 +31,7 @@ export const useAuthStore = create<AuthState>((set) => ({
     set({ user: session?.user ?? null, isAuthenticated: !!session, isLoading: false })
 
     // Listen for auth state changes
-    supabase.auth.onAuthStateChange((_event, session) => {
+    supabase.auth.onAuthStateChange((_event: import("@supabase/supabase-js").AuthChangeEvent, session: import("@supabase/supabase-js").Session | null) => {
       set({ user: session?.user ?? null, isAuthenticated: !!session })
     })
   },

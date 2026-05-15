@@ -291,4 +291,8 @@ function MaterialCard({
           <button onClick={onDelete} className="p-1.5 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-md transition-colors">
             <Trash2 className="w-3.5 h-3.5" />
           </button>
-  
+          </div>
+      </div>
+    </div>
+  )
+}
