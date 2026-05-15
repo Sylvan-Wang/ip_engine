@@ -1,0 +1,3 @@
+ip-engine deploy check
+source: frontend/public/deploy-check.txt
+expected publish path: /deploy-check.txt
