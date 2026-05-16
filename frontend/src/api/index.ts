@@ -6,12 +6,19 @@ import { supabase } from '../lib/supabase'
 // ─────────────────────────────────────────────
 export const authApi = {
   register: async ({ email, password, name }: { email: string; password: string; name: string }) => {
-    const { data, error } = await supabase.auth.signUp({
-      email,
-      password,
-      options: { data: { name } },
+    // Use admin-signup Edge Function to bypass email confirmation rate limit
+    const { data, error } = await supabase.functions.invoke('admin-signup', {
+      body: { email, password, name },
     })
     if (error) throw error
+    if (data?.error) throw new Error(data.error)
+    // Restore the session returned by the Edge Function
+    if (data?.session) {
+      await supabase.auth.setSession({
+        access_token: data.session.access_token,
+        refresh_token: data.session.refresh_token,
+      })
+    }
     return data
   },
 
@@ -219,6 +226,18 @@ export const materialsApi = {
   },
 
   update: async (id: string, data: object) => {
+    const { data: updated, error } = await supabase
+      .from('materials').update(data).eq('id', id).select().single()
+    if (error) throw error
+    return updated
+  },
+
+  delete: async (id: string) => {
+    const { error } = await supabase.from('materials').delete().eq('id', id)
+    if (error) throw error
+  },
+}
+e: async (id: string, data: object) => {
     const { data: updated, error } = await supabase
       .from('materials').update(data).eq('id', id).select().single()
     if (error) throw error
