@@ -15,8 +15,8 @@ with open(os.path.join(dist_dir, 'index.html'), encoding='utf-8') as f:
 
 # Find referenced asset filenames
 import re
-js_file = re.search(r'assets/(index-[^"]+\\.js)', html)
-css_file = re.search(r'assets/(index-[^"]+\\.css)', html)
+js_file = re.search(r'assets/(index-[^"]+\.js)', html)
+css_file = re.search(r'assets/(index-[^"]+\.css)', html)
 js_name = js_file.group(1) if js_file else None
 css_name = css_file.group(1) if css_file else None
 
