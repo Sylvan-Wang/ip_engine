@@ -11,10 +11,6 @@ const nav = [
   { to: '/materials', icon: Package,          label: '素材库' },
 ]
 
-// UGC创作者商业板块所在的站点(产品B)。这里只放跳转目标，真正的免登录跳转
-// 是带着这次真实会话的token去B站点的 /auth/bridge 接口换成B站点自己的登录态。
-const COMMERCE_SITE = 'https://ugc-platform-tob-demo.netlify.app'
-
 export default function Layout() {
   const { user, logout } = useAuthStore()
   const navigate = useNavigate()
@@ -24,11 +20,14 @@ export default function Layout() {
     navigate('/login')
   }
 
+  // "商业合作"现在是站内跳转：地址栏一直留在 ip-engine 这个域名下，Netlify会把
+  // /creator/* 和 /auth/bridge 这些路径自动转发到UGC创作者商业板块那个站点的内容，
+  // 所以用整页跳转、不开新标签页，体验上就像同一个网站里的另一个页面。
   const handleOpenCommerce = async () => {
     const { data } = await supabase.auth.getSession()
     const session = data.session
     if (!session) {
-      window.open(`${COMMERCE_SITE}/creator/campaigns`, '_blank')
+      window.location.href = '/creator/campaigns'
       return
     }
     const params = new URLSearchParams({
@@ -36,7 +35,7 @@ export default function Layout() {
       refresh_token: session.refresh_token,
       redirect: '/creator/campaigns',
     })
-    window.open(`${COMMERCE_SITE}/auth/bridge?${params.toString()}`, '_blank')
+    window.location.href = `/auth/bridge?${params.toString()}`
   }
 
   return (

@@ -1,1 +1,8 @@
+# 下面几条让"商业合作"板块的页面看起来像是本站自己的页面：
+# 浏览器地址栏一直是 ip-engine.netlify.app，内容其实是从另一个站点(UGC创作者商业板块)转发过来的。
+/creator/*  https://ugc-platform-tob-demo.netlify.app/creator/:splat  200
+/auth/bridge  https://ugc-platform-tob-demo.netlify.app/auth/bridge  200
+/_next/*  https://ugc-platform-tob-demo.netlify.app/_next/:splat  200
+/uploads/*  https://ugc-platform-tob-demo.netlify.app/uploads/:splat  200
+
 /* /index.html 200

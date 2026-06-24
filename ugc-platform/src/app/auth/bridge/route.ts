@@ -13,7 +13,13 @@ export async function GET(request: NextRequest) {
   const refreshToken = request.nextUrl.searchParams.get("refresh_token");
   const redirectPath = request.nextUrl.searchParams.get("redirect") || "/creator/campaigns";
 
-  const response = NextResponse.redirect(new URL(redirectPath, request.url));
+  // 用相对路径跳转（只写 "/creator/campaigns" 这种，不拼成带域名的完整网址）。
+  // 这样不管这个请求是直接打到本站点，还是被IP引擎那边代理转发过来的，
+  // 跳转后浏览器地址栏都留在发起跳转时的那个域名上，不会被弹去另一个网站。
+  const response = new NextResponse(null, {
+    status: 307,
+    headers: { Location: redirectPath }
+  });
 
   if (!accessToken || !refreshToken) {
     return response;
