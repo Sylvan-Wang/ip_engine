@@ -23,5 +23,5 @@
     }
   },
   "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],
-  "exclude": ["node_modules", "_node_modules_broken_delete_me", "**/_node_modules_broken_delete_me/**"]
+  "exclude": ["node_modules", "_node_modules_broken_delete_me", "**/_node_modules_broken_delete_me/**", "prisma"]
 }
