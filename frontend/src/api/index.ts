@@ -237,15 +237,3 @@ export const materialsApi = {
     if (error) throw error
   },
 }
-e: async (id: string, data: object) => {
-    const { data: updated, error } = await supabase
-      .from('materials').update(data).eq('id', id).select().single()
-    if (error) throw error
-    return updated
-  },
-
-  delete: async (id: string) => {
-    const { error } = await supabase.from('materials').delete().eq('id', id)
-    if (error) throw error
-  },
-}
