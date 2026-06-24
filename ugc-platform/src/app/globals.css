@@ -1,0 +1,37 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color: #202124;
+  background: #fbf9ff;
+}
+
+body {
+  margin: 0;
+  background:
+    radial-gradient(circle at top right, rgba(167, 124, 255, 0.15), transparent 32rem),
+    linear-gradient(180deg, #fffaff 0%, #fbf9ff 48%, #ffffff 100%);
+}
+
+button,
+input,
+textarea,
+select {
+  font: inherit;
+}
+
+.glass-card {
+  border: 1px solid #eadfff;
+  background: rgba(255, 255, 255, 0.86);
+  box-shadow: 0 16px 42px rgba(145, 103, 255, 0.1);
+}
+
+.gradient-button {
+  background: linear-gradient(90deg, #ff68a8 0%, #a77cff 100%);
+  box-shadow: 0 10px 22px rgba(167, 124, 255, 0.28);
+}
+
+.soft-gradient {
+  background: linear-gradient(135deg, rgba(255, 104, 168, 0.16), rgba(167, 124, 255, 0.16));
+}
