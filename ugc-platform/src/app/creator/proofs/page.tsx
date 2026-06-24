@@ -1,19 +1,19 @@
 import { submitPublishProof } from "@/app/actions";
 import { Field, buttonClass, inputClass, textareaClass } from "@/components/Field";
 import { PageHeader } from "@/components/PageHeader";
-import { MOCK_USERS, getSupabaseForRole } from "@/lib/supabase";
+import { getCreatorSession } from "@/lib/supabase";
 
 export const dynamic = "force-dynamic";
 
 export default async function CreatorProofsPage() {
-  const supabase = await getSupabaseForRole("creator");
+  const { supabase, userId: creatorId } = await getCreatorSession();
   const { data: contents } = await supabase
     .from("produced_contents")
     .select(
       "*, application:applications!inner(creator_id, campaign:campaigns(title)), publish_proofs(*), content_claims(*)"
     )
     .eq("status", "approved")
-    .eq("application.creator_id", MOCK_USERS.creator)
+    .eq("application.creator_id", creatorId)
     .order("created_at", { ascending: false });
 
   const rows = contents ?? [];

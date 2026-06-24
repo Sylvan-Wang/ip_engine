@@ -5,7 +5,7 @@ import { mkdir, writeFile } from "fs/promises";
 import path from "path";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
-import { getSupabaseForRole, MOCK_USERS } from "@/lib/supabase";
+import { getSupabaseForRole, getCreatorSession, MOCK_USERS } from "@/lib/supabase";
 
 async function saveUploadedFile(file: File | null, folder: string) {
   if (!file || file.size === 0) {
@@ -25,7 +25,7 @@ async function saveUploadedFile(file: File | null, folder: string) {
 
 export async function createApplication(formData: FormData) {
   const campaignId = String(formData.get("campaignId"));
-  const supabase = await getSupabaseForRole("creator");
+  const { supabase, userId: creatorId } = await getCreatorSession();
 
   const { data: campaign, error: campaignError } = await supabase
     .from("campaigns")
@@ -41,7 +41,7 @@ export async function createApplication(formData: FormData) {
     .from("applications")
     .insert({
       campaign_id: campaignId,
-      creator_id: MOCK_USERS.creator,
+      creator_id: creatorId,
       name: String(formData.get("name")),
       social_platform: String(formData.get("socialPlatform")),
       social_handle: String(formData.get("socialHandle")),
@@ -71,7 +71,7 @@ export async function createApplication(formData: FormData) {
 
   const { error: paymentError } = await supabase.from("payments").insert({
     application_id: application.id,
-    creator_id: MOCK_USERS.creator,
+    creator_id: creatorId,
     amount: campaign.reward_amount,
     status: "pending_review",
     note: "报名后自动生成的结算占位记录，发布证明提交后由品牌方确认。"
@@ -86,11 +86,11 @@ export async function createApplication(formData: FormData) {
 }
 
 export async function updateCreatorProfile(formData: FormData) {
-  const supabase = await getSupabaseForRole("creator");
+  const { supabase, userId: creatorId } = await getCreatorSession();
 
   const { error } = await supabase.from("creator_profiles").upsert(
     {
-      user_id: MOCK_USERS.creator,
+      user_id: creatorId,
       display_name: String(formData.get("displayName")),
       location: String(formData.get("location")),
       interests: String(formData.get("interests")),
@@ -189,7 +189,7 @@ export async function updateCampaignWorkflow(formData: FormData) {
 export async function selectApplicationNoteType(formData: FormData) {
   const id = String(formData.get("id"));
   const selectedNoteType = String(formData.get("selectedNoteType")) as "image_text" | "video";
-  const supabase = await getSupabaseForRole("creator");
+  const { supabase } = await getCreatorSession();
 
   const { error } = await supabase
     .from("applications")
@@ -245,10 +245,10 @@ export async function submitVideoMaterial(formData: FormData) {
     throw new Error("Please upload a material file.");
   }
 
-  const supabase = await getSupabaseForRole("creator");
+  const { supabase, userId: creatorId } = await getCreatorSession();
   const { error } = await supabase.from("material_submissions").insert({
     application_id: applicationId,
-    creator_id: MOCK_USERS.creator,
+    creator_id: creatorId,
     note_type: "video",
     file_url: fileUrl,
     description: String(formData.get("description"))
@@ -270,7 +270,7 @@ export async function submitImageTextContent(formData: FormData) {
     throw new Error("请上传图文照片文件。");
   }
 
-  const supabase = await getSupabaseForRole("creator");
+  const { supabase } = await getCreatorSession();
   const { error } = await supabase.from("produced_contents").insert({
     application_id: applicationId,
     content_type: "image_text",
@@ -406,12 +406,12 @@ export async function rejectProducedContent(formData: FormData) {
 
 export async function claimContent(formData: FormData) {
   const producedContentId = String(formData.get("producedContentId"));
-  const supabase = await getSupabaseForRole("creator");
+  const { supabase, userId: creatorId } = await getCreatorSession();
 
   const { error } = await supabase.from("content_claims").upsert(
     {
       produced_content_id: producedContentId,
-      creator_id: MOCK_USERS.creator
+      creator_id: creatorId
     },
     { onConflict: "produced_content_id" }
   );
@@ -429,12 +429,12 @@ export async function claimContent(formData: FormData) {
 export async function submitPublishProof(formData: FormData) {
   const producedContentId = String(formData.get("producedContentId"));
   const screenshotUrl = await saveUploadedFile(formData.get("screenshot") as File | null, "proofs");
-  const supabase = await getSupabaseForRole("creator");
+  const { supabase, userId: creatorId } = await getCreatorSession();
 
   const { error: proofError } = await supabase.from("publish_proofs").upsert(
     {
       produced_content_id: producedContentId,
-      creator_id: MOCK_USERS.creator,
+      creator_id: creatorId,
       post_url: String(formData.get("postUrl")),
       screenshot_url: screenshotUrl,
       note: String(formData.get("note") || "")

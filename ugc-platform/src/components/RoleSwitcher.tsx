@@ -20,7 +20,7 @@ export function RoleSwitcher() {
   const activeRole = getRoleFromPath(pathname);
 
   return (
-    <nav className="grid grid-cols-3 gap-2 rounded-[22px] border border-[#eadfff] bg-white p-2 text-sm shadow-sm">
+    <nav className="grid grid-cols-3 gap-2 rounded-[22px] border border-[#dbe5ff] bg-white p-2 text-sm shadow-sm">
       {links.map((link) => {
         const isActive = activeRole === link.key;
         return (
@@ -28,7 +28,7 @@ export function RoleSwitcher() {
             key={link.href}
             href={link.href}
             className={`rounded-2xl px-5 py-3 text-center ${
-              isActive ? "soft-gradient text-[#8c6bff]" : "text-slate-700 hover:bg-[#f5edff]"
+              isActive ? "soft-gradient text-[#2563eb]" : "text-slate-700 hover:bg-[#eef3ff]"
             }`}
           >
             <span className="block font-semibold">{link.label}</span>

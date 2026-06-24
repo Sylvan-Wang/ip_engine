@@ -2,16 +2,16 @@ import Link from "next/link";
 import { PageHeader } from "@/components/PageHeader";
 import { StatusBadge } from "@/components/StatusBadge";
 import { secondaryButtonClass } from "@/components/Field";
-import { MOCK_USERS, getSupabaseForRole } from "@/lib/supabase";
+import { getCreatorSession } from "@/lib/supabase";
 
 export const dynamic = "force-dynamic";
 
 export default async function CreatorApplicationsPage() {
-  const supabase = await getSupabaseForRole("creator");
+  const { supabase, userId: creatorId } = await getCreatorSession();
   const { data: applications } = await supabase
     .from("applications")
     .select("*, campaign:campaigns(title)")
-    .eq("creator_id", MOCK_USERS.creator)
+    .eq("creator_id", creatorId)
     .order("created_at", { ascending: false });
 
   const rows = applications ?? [];

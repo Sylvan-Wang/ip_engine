@@ -3,7 +3,7 @@ import { claimContent, selectApplicationNoteType, submitImageTextContent, submit
 import { Field, buttonClass, inputClass, secondaryButtonClass, textareaClass } from "@/components/Field";
 import { PageHeader } from "@/components/PageHeader";
 import { StatusBadge } from "@/components/StatusBadge";
-import { MOCK_USERS, getSupabaseForRole } from "@/lib/supabase";
+import { getCreatorSession } from "@/lib/supabase";
 
 export const dynamic = "force-dynamic";
 
@@ -13,13 +13,13 @@ function NoteTypeLabel({ type }: { type: "image_text" | "video" | null }) {
 }
 
 export default async function CreatorContentProductionPage() {
-  const supabase = await getSupabaseForRole("creator");
+  const { supabase, userId: creatorId } = await getCreatorSession();
   const { data: applications } = await supabase
     .from("applications")
     .select(
       "*, campaign:campaigns(*), material_submissions(*), produced_contents(*, content_claims(*), publish_proofs(*))"
     )
-    .eq("creator_id", MOCK_USERS.creator)
+    .eq("creator_id", creatorId)
     .eq("status", "approved")
     .order("created_at", { ascending: false })
     .order("created_at", { foreignTable: "material_submissions", ascending: false })

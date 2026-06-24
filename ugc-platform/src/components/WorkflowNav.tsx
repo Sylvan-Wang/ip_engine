@@ -13,7 +13,8 @@ const groups = [
       ["我的报名", "/creator/applications"],
       ["内容制作", "/creator/content-production"],
       ["发布证明", "/creator/proofs"],
-      ["我的收益", "/creator/earnings"]
+      ["我的收益", "/creator/earnings"],
+      ["返回 IP引擎主页", "https://ip-engine.netlify.app/dashboard"]
     ]
   },
   {
@@ -53,15 +54,15 @@ export function WorkflowNav() {
   return (
     <aside className="fixed left-0 top-0 hidden h-screen w-[260px] flex-col border-r border-[#f0e7ff] bg-white/82 px-4 py-6 backdrop-blur lg:flex">
       <Link href="/" className="flex items-center gap-3 px-2 text-2xl font-bold text-[#222]">
-        <span className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-[#eadfff] bg-white text-lg">
+        <span className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-[#dbe5ff] bg-white text-lg">
           UGC
         </span>
         <span>种草平台</span>
       </Link>
 
-      <div className="mt-8 rounded-2xl border border-[#eadfff] bg-[#faf7ff] px-4 py-3">
+      <div className="mt-8 rounded-2xl border border-[#dbe5ff] bg-[#f5f8ff] px-4 py-3">
         <div className="text-xs font-semibold text-slate-400">当前职能</div>
-        <div className="mt-1 text-base font-bold text-[#8c6bff]">{activeGroup.name}</div>
+        <div className="mt-1 text-base font-bold text-[#2563eb]">{activeGroup.name}</div>
       </div>
 
       <div className="mt-5 flex-1 overflow-y-auto pr-1">
@@ -75,8 +76,8 @@ export function WorkflowNav() {
                 href={href}
                 className={`block rounded-2xl px-4 py-3 text-sm font-medium ${
                   isActive
-                    ? "bg-[#f3ecff] text-[#8c6bff]"
-                    : "text-slate-600 hover:bg-[#f3ecff] hover:text-[#8c6bff]"
+                    ? "bg-[#eaf1ff] text-[#2563eb]"
+                    : "text-slate-600 hover:bg-[#eaf1ff] hover:text-[#2563eb]"
                 }`}
               >
                 {label}
@@ -86,8 +87,8 @@ export function WorkflowNav() {
         </div>
       </div>
 
-      <div className="mt-4 rounded-2xl bg-gradient-to-r from-[#ff68a8] to-[#a77cff] px-4 py-3 text-center text-sm font-semibold text-white">
-        当前为模拟登录
+      <div className="mt-4 rounded-2xl bg-gradient-to-r from-[#2563eb] to-[#3b82f6] px-4 py-3 text-center text-sm font-semibold text-white">
+        {activeRole === "creator" ? "创作者已对接IP引擎真实登录" : "当前为模拟登录账号"}
       </div>
     </aside>
   );

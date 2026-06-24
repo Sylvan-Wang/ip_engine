@@ -1,12 +1,12 @@
 import { createApplication } from "@/app/actions";
 import { Field, buttonClass, inputClass, textareaClass } from "@/components/Field";
 import { StatusBadge } from "@/components/StatusBadge";
-import { MOCK_USERS, getSupabaseForRole } from "@/lib/supabase";
+import { getCreatorSession } from "@/lib/supabase";
 
 export const dynamic = "force-dynamic";
 
 export default async function CreatorCampaignsPage() {
-  const supabase = await getSupabaseForRole("creator");
+  const { supabase, userId: creatorId } = await getCreatorSession();
 
   const { data: campaigns } = await supabase
     .from("campaigns")
@@ -35,7 +35,7 @@ export default async function CreatorCampaignsPage() {
       <div className="grid gap-5 xl:grid-cols-2">
         {rows.map((campaign: any) => {
           const allApplications = campaign.applications ?? [];
-          const existingApplication = allApplications.find((a: any) => a.creator_id === MOCK_USERS.creator);
+          const existingApplication = allApplications.find((a: any) => a.creator_id === creatorId);
           return (
             <article key={campaign.id} className="glass-card rounded-[28px] p-6">
               <div className="flex flex-wrap items-start justify-between gap-3">

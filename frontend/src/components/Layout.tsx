@@ -1,6 +1,7 @@
 import { Outlet, NavLink, useNavigate } from 'react-router-dom'
-import { LayoutDashboard, Lightbulb, FileText, Package, LogOut, Zap } from 'lucide-react'
+import { LayoutDashboard, Lightbulb, FileText, Package, LogOut, Zap, Briefcase } from 'lucide-react'
 import { useAuthStore } from '../stores/authStore'
+import { supabase } from '../lib/supabase'
 import clsx from 'clsx'
 
 const nav = [
@@ -10,6 +11,10 @@ const nav = [
   { to: '/materials', icon: Package,          label: '素材库' },
 ]
 
+// UGC创作者商业板块所在的站点(产品B)。这里只放跳转目标，真正的免登录跳转
+// 是带着这次真实会话的token去B站点的 /auth/bridge 接口换成B站点自己的登录态。
+const COMMERCE_SITE = 'https://ugc-platform-tob-demo.netlify.app'
+
 export default function Layout() {
   const { user, logout } = useAuthStore()
   const navigate = useNavigate()
@@ -17,6 +22,21 @@ export default function Layout() {
   const handleLogout = async () => {
     await logout()
     navigate('/login')
+  }
+
+  const handleOpenCommerce = async () => {
+    const { data } = await supabase.auth.getSession()
+    const session = data.session
+    if (!session) {
+      window.open(`${COMMERCE_SITE}/creator/campaigns`, '_blank')
+      return
+    }
+    const params = new URLSearchParams({
+      access_token: session.access_token,
+      refresh_token: session.refresh_token,
+      redirect: '/creator/campaigns',
+    })
+    window.open(`${COMMERCE_SITE}/auth/bridge?${params.toString()}`, '_blank')
   }
 
   return (
@@ -53,6 +73,14 @@ export default function Layout() {
               {label}
             </NavLink>
           ))}
+
+          <button
+            onClick={handleOpenCommerce}
+            className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-gray-600 hover:bg-gray-50 hover:text-gray-900 transition-colors"
+          >
+            <Briefcase className="w-4 h-4" />
+            商业合作
+          </button>
         </nav>
 
         {/* User */}

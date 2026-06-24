@@ -1,15 +1,15 @@
 import { PageHeader } from "@/components/PageHeader";
 import { StatusBadge } from "@/components/StatusBadge";
-import { MOCK_USERS, getSupabaseForRole } from "@/lib/supabase";
+import { getCreatorSession } from "@/lib/supabase";
 
 export const dynamic = "force-dynamic";
 
 export default async function CreatorEarningsPage() {
-  const supabase = await getSupabaseForRole("creator");
+  const { supabase, userId: creatorId } = await getCreatorSession();
   const { data: payments } = await supabase
     .from("payments")
     .select("*, application:applications(campaign:campaigns(title))")
-    .eq("creator_id", MOCK_USERS.creator)
+    .eq("creator_id", creatorId)
     .order("created_at", { ascending: false });
 
   const rows = payments ?? [];

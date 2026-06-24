@@ -1,4 +1,6 @@
 import { createClient } from "@supabase/supabase-js";
+import { createServerClient, type CookieOptions } from "@supabase/ssr";
+import { cookies } from "next/headers";
 
 const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL!;
 const SUPABASE_ANON_KEY = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
@@ -60,4 +62,36 @@ export async function getSupabaseForRole(role: Role) {
   }
 
   return supabase;
+}
+
+/**
+ * 创作者侧专用：优先认"真实从 IP 引擎跳转过来的登录用户"（靠 /auth/bridge 写入的 cookie 会话）。
+ * 如果没有真实会话（比如直接打开这个站点、没走桥接），就退回到固定测试账号"小红"，
+ * 保证旧的访问方式不会被这次改动破坏。
+ */
+export async function getCreatorSession() {
+  const cookieStore = await cookies();
+  const supabase = createServerClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+    cookies: {
+      getAll() {
+        return cookieStore.getAll();
+      },
+      setAll(cookiesToSet: { name: string; value: string; options: CookieOptions }[]) {
+        try {
+          cookiesToSet.forEach(({ name, value, options }) => cookieStore.set(name, value, options));
+        } catch {
+          // Server Component 里不允许写 cookie，这里安全忽略，由 Route Handler/Server Action 负责写入。
+        }
+      }
+    }
+  });
+
+  const { data } = await supabase.auth.getUser();
+
+  if (data.user) {
+    return { supabase, userId: data.user.id, isRealUser: true as const };
+  }
+
+  const fallbackSupabase = await getSupabaseForRole("creator");
+  return { supabase: fallbackSupabase, userId: TEST_ACCOUNTS.creator.id, isRealUser: false as const };
 }
